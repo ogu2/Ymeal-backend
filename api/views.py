@@ -7,11 +7,19 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 
-from models import DiningHall, Meal, YUSer, Comment
+from models import Cafeteria, Attribute, Serving, Meal
 
+from django.core.paginator import Paginator
 # General Fns
+def meal_selector(className, request=None):
+    data = [item.prepare() for item in className.objects.all()]
+    return HttpResponse(json.dumps(data),content_type="application/json")
+def pre_process(className, data):
+    if className.__name__ == "Meal":
+        data = data.filter
+
 def all_selector(className):
-    data = className.objects.all()
+    data = [item.prepare() for item in className.objects.all()]
     return HttpResponse(json.dumps(data),content_type="application/json")
 
 def id_selector(request, className):
@@ -21,18 +29,16 @@ def id_selector(request, className):
         info = className.objects.filter(id=int(_id))
     return HttpResponse(json.dumps(info),content_type="application/json")
 
-# Dining Halls
-
+#---------- Dining Halls
 #/api/halls
 def all_halls(request):
-    return all_selector(DiningHall)
+    return all_selector(Cafeteria)
 
 #/api/hall/(id)
 def hall_info(request):
-    return id_selector(request, DiningHall)
+    return id_selector(request, Cafeteria)
 
-# Meals
-
+#---------- Meals
 #/api/meals
 def all_meals(request):
     return all_selector(Meal)
@@ -41,12 +47,8 @@ def all_meals(request):
 def meal_info(request):
     return id_selector(request, Meal)
 
-# Comments
-
+#---------- Comments
 #/api/meal/comments
-
 #/api/comment/(id)
-
-# YUser
-
+#---------- YUser
 #/api/user/(id)

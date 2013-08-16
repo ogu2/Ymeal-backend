@@ -59,26 +59,37 @@ for day in days:
                                 description=meal_descr.lower()
                             )
                         except:
+                            # new entry
                             db_meal = Meal(
                                 name=meal_name.lower(),
                                 description=meal_descr.lower()
-                            ).save()
+                            )
+                            db_meal.save()
                             if db_attrs:
-                                db_meal.attributes.add(*db_attrs)
-                                db_meal.save()
-
+                                try:
+                                     db_meal.attributes.add(*db_attrs)
+                                except:
+                                    pass
+                            db_meal.save()
                         db_location = Cafeteria.objects.get_or_create(
                             name=dh_location.lower()
                         )[0]
+                        # for some reason get_or_create keeps failing with errors
                         try:
-                            db_serving = Serving.objects.get_or_create(
+                            db_serving = Serving.objects.get(
                                 meal=db_meal,
                                 location=db_location,
                                 date=date,
                                 time_of_day=Serving.BREAKFAST
                             )
                         except:
-                            pass
+                            db_serving =  Serving(
+                                meal=db_meal,
+                                location=db_location,
+                                date=date,
+                                time_of_day=Serving.BREAKFAST
+                            )
+                            db_serving.save()
                     except:
                         pass
             except:

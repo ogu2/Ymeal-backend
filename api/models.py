@@ -2,15 +2,25 @@ from django.db import models
 
 # Create your models here.
 
-
 class Cafeteria(models.Model):
     """This will be one of the A-G dining halls"""
     name = models.CharField(max_length=200)
 
+    def prepare(self):
+        return {'name':self.name}
+
+    def __unicode__(self):
+        return self.name
 
 class Attribute(models.Model):
     """Is the meal vegeterian, gluten free etc."""
     description = models.CharField(max_length=100)
+
+    def prepare(self):
+        return self.description
+
+    def __unicode__(self):
+        return self.description
 
 
 class Meal(models.Model):
@@ -20,6 +30,16 @@ class Meal(models.Model):
     description = models.CharField(max_length=500)
     attributes = models.ManyToManyField(Attribute, blank=True, null=True)
 
+    def prepare(self):
+        return {
+                'name':self.name,
+                'description':self.description,
+                'attributes' : [x.prepare() for x in self.attributes.all()]
+                }
+
+    def __unicode__(self):
+        attrs = ','.join([a.description for a in self.attributes.all()])
+        return str(self.name)+'('+attrs+')' if attrs else str(self.name)
 
 class Serving(models.Model):
     """An instance when a meal is served"""
@@ -39,7 +59,14 @@ class Serving(models.Model):
     time_of_day = models.CharField(max_length=2,
                                    choices=TIME_CHOICES,
                                    default=LUNCH)
-
+    def prepare(self):
+        return {
+                'meal':self.meal.prepare(self),
+                'location':self.location.prepare(self),
+                'date':str(self.date)
+                }
+    def __unicode__(self):
+        return str(self.meal) + ' at '+str(self.location)+' on '+str(self.date)
 #class YUser(models.Model):
 #    """(Yahoo!) employee who uses app"""
 #    device_id = models.CharField(max_length=100)
