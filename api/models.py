@@ -47,6 +47,7 @@ class Serving(models.Model):
     meal = models.ForeignKey(Meal)
     location = models.ForeignKey(Cafeteria)
     date = models.DateField(null=True, blank=True)
+    category = models.CharField(max_length=100, blank=True, null=True)
 
     # choices: django docs /ref/models/fields.html
     BREAKFAST = 'BR'
@@ -63,7 +64,7 @@ class Serving(models.Model):
     def prepare(self):
         x= {
                 'cafeteria':self.location.prepare(),
-                'category':'pizza',
+                'category': str(self.category),
                 'date':str(self.date)
                 }
         y = self.meal.prepare()
