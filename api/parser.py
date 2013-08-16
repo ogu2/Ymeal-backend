@@ -1,4 +1,5 @@
 from BeautifulSoup import BeautifulSoup as bs
+from HTMLParser import HTMLParser
 import datetime
 from api.models import Cafeteria, Attribute, Meal, Serving
 
@@ -25,6 +26,7 @@ cafes = {
         'boardwalk':358
         }
 
+html_escaper = HTMLParser()
 # cafe and ID on bon-appetit website
 for cafe,ba_id in cafes.items():
     url = 'http://legacy.cafebonappetit.com/feeds/weekly/'+str(ba_id)
@@ -82,8 +84,8 @@ for cafe,ba_id in cafes.items():
                                     # fails if no object is found
                                     try:
                                         db_meal = Meal.objects.get(
-                                            name=meal_name.lower(),
-                                            description=meal_descr.lower()
+                                            name=html_escaper.unescape(meal_name).lower(),
+                                            description=html_escaper.unescape(meal_descr).lower()
                                         )
                                     except:
                                         # new entry

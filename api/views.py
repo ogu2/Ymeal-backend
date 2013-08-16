@@ -8,7 +8,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 
-from models import Cafeteria, Attribute, Serving, Meal
+from models import Cafeteria, Attribute, Serving, Meal, Reaction, YUser
 
 from django.core.paginator import Paginator
 # General Fns
@@ -47,6 +47,45 @@ def hall_info(request):
 def meal_info(request):
     return id_selector(request, Meal)
 
+#----------Meal (dis)likes
+def reaction_process(request,meal_id,custom_reaction):
+    print custom_reaction
+    device_id = request.POST.get('device_id')
+    if not device_id:
+        return HttpResponse('No device_id')
+    _serving = Serving.objects.filter(pk=meal_id)
+    if not _serving:
+        return HttpResponse('Meal not found')
+    else:
+        _serving= _serving[0]
+    if type(device_id) is list:
+        device_id = str(device_id[0])
+    else:
+        device_id = str(device_id)
+    yuser = YUser.objects.get_or_create(
+             device_id =str(device_id)
+            )[0]
+    # save reaction
+    try:
+        Reaction.objects.get(
+                user = yuser,
+                serving = _serving,
+                feedback = int(custom_reaction)
+                )
+    except:
+        Reaction(
+                user = yuser,
+                serving = _serving,
+                feedback = int(custom_reaction)
+                ).save()
+    return HttpResponse('OK')
+
+def like_serving(request, meal_id):
+    return reaction_process(request,meal_id,Reaction.LIKE)
+
+def dislike_serving(request, meal_id):
+    return reaction_process(request,meal_id,Reaction.DISLIKE)
+
 #----------Servings
 #/api/meals
 def todays_servings(request):
@@ -57,3 +96,4 @@ def todays_servings(request):
 #/api/comment/(id)
 #---------- YUser
 #/api/user/(id)
+

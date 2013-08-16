@@ -32,7 +32,6 @@ class Meal(models.Model):
 
     def prepare(self):
         return {
-                'meal_id': self.pk,
                 'name':self.name,
                 'description':self.description,
                 'attributes' : [x.prepare() for x in self.attributes.all()]
@@ -71,37 +70,33 @@ class Serving(models.Model):
                 'cafeteria':self.location.prepare(),
                 'category': str(self.category),
                 'date':str(self.date),
-                'bld':bld
+                'bld':bld,
+                'meal_id':self.pk
                 }
         y = self.meal.prepare()
         return dict(x.items()+y.items())
     def __unicode__(self):
         return str(self.meal) + ' at '+str(self.location)+' on '+str(self.date)
-#class YUser(models.Model):
-#    """(Yahoo!) employee who uses app"""
-#    device_id = models.CharField(max_length=100)
-#    # TODO: Decide if we want to add more info
-#
-#
+
+class YUser(models.Model):
+    """(Yahoo!) employee who uses app"""
+    device_id = models.CharField(max_length=100)
+    # TODO: Decide if we want to add more info
+
+
 #class Comment(models.Model):
 #    """User comment"""
 #    user = models.ForeignKey('YUser', blank=True, null=True)
 #    comment = models.CharField(max_length=250)
 #
 #
-#class Reaction(models.Model):
-#    """A Yuser's reaction to the meal for a particular
-#    serving. This enables us to track days when users
-#    like a meal they otherwise hate or vice versa"""
-#    LIKE = 1
-#    DISLIKE = 2
-#    NEITHER = 3
-#    REACTION_CHOICES = (
-#        (LIKE, 'Like'),
-#        (DISLIKE, 'Dislike'),
-#        (NEITHER, 'Neither'),
-#    )
-#    user = models.ForeignKey(YUser)
-#    serving = models.ForeignKey(Serving)
-#    feedback = models.PositiveSmallIntegerField(choices=REACTION_CHOICES,
-#                                                default=NEITHER)
+class Reaction(models.Model):
+    """A Yuser's reaction to the meal for a particular
+    serving. This enables us to track days when users
+    like a meal they otherwise hate or vice versa"""
+    LIKE = 1
+    DISLIKE = 2
+    NEITHER = 3
+    user = models.ForeignKey(YUser)
+    serving = models.ForeignKey(Serving)
+    feedback = models.PositiveSmallIntegerField(default=NEITHER)
