@@ -18,7 +18,7 @@ def meal_selector(className, request=None):
 
 def pre_process(className, data):
     if className.__name__ == "Serving":
-        data = data.filter(date = datetime.datetime.now().date() )
+        data = data.filter(date = datetime.datetime.now().date() ).order_by('-location__name')
     return data
 
 def all_selector(className):
