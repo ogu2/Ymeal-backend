@@ -32,6 +32,7 @@ class Meal(models.Model):
 
     def prepare(self):
         return {
+                'meal_id': self.pk,
                 'name':self.name,
                 'description':self.description,
                 'attributes' : [x.prepare() for x in self.attributes.all()]
