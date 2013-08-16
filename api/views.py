@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from models import DiningHall, Meal, YUSer, Comment
 
 # General Fns
-def all_selector(className)
+def all_selector(className):
     data = className.objects.all()
     return HttpResponse(json.dumps(data),content_type="application/json")
 
