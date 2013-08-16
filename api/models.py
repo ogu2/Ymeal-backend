@@ -62,7 +62,8 @@ class Serving(models.Model):
                                    default=LUNCH)
     def prepare(self):
         x= {
-                'location':self.location.prepare(),
+                'cafeteria':self.location.prepare(),
+                'station':'pizza',
                 'date':str(self.date)
                 }
         y = self.meal.prepare()
