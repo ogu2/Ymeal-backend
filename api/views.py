@@ -15,6 +15,7 @@ from django.core.paginator import Paginator
 def meal_selector(className, request=None):
     data = [item.prepare() for item in className.objects.all()]
     return HttpResponse(json.dumps(data),content_type="application/json")
+
 def pre_process(className, data):
     if className.__name__ == "Serving":
         data = data.filter(date = datetime.datetime.now().date() )
