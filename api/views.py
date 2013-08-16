@@ -1,6 +1,7 @@
 # Create your views here.
 try: import simplejson as json
 except ImportError: import json
+import datetime
 
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, HttpResponse
@@ -15,11 +16,12 @@ def meal_selector(className, request=None):
     data = [item.prepare() for item in className.objects.all()]
     return HttpResponse(json.dumps(data),content_type="application/json")
 def pre_process(className, data):
-    if className.__name__ == "Meal":
-        data = data.filter
+    if className.__name__ == "Serving":
+        data = data.filter(date = datetime.datetime.now().date() )
+    return data
 
 def all_selector(className):
-    data = [item.prepare() for item in className.objects.all()]
+    data = [item.prepare() for item in pre_process(className, className.objects.all())]
     return HttpResponse(json.dumps(data),content_type="application/json")
 
 def id_selector(request, className):
@@ -39,13 +41,15 @@ def hall_info(request):
     return id_selector(request, Cafeteria)
 
 #---------- Meals
-#/api/meals
-def all_meals(request):
-    return all_selector(Meal)
 
 #/api/meal/(id)
 def meal_info(request):
     return id_selector(request, Meal)
+
+#----------Servings
+#/api/meals
+def todays_servings(request):
+    return all_selector(Serving)
 
 #---------- Comments
 #/api/meal/comments

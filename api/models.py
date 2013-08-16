@@ -7,7 +7,7 @@ class Cafeteria(models.Model):
     name = models.CharField(max_length=200)
 
     def prepare(self):
-        return {'name':self.name}
+        return self.name
 
     def __unicode__(self):
         return self.name
@@ -60,11 +60,12 @@ class Serving(models.Model):
                                    choices=TIME_CHOICES,
                                    default=LUNCH)
     def prepare(self):
-        return {
-                'meal':self.meal.prepare(self),
-                'location':self.location.prepare(self),
+        x= {
+                'location':self.location.prepare(),
                 'date':str(self.date)
                 }
+        y = self.meal.prepare()
+        return dict(x.items()+y.items())
     def __unicode__(self):
         return str(self.meal) + ' at '+str(self.location)+' on '+str(self.date)
 #class YUser(models.Model):
