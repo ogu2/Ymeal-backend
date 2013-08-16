@@ -62,10 +62,16 @@ class Serving(models.Model):
                                    choices=TIME_CHOICES,
                                    default=LUNCH)
     def prepare(self):
+        # find a better way of doing this
+        bld = ''
+        for x in self.TIME_CHOICES:
+            if x[0]==self.time_of_day:
+                bld=x[1].lower()
         x= {
                 'cafeteria':self.location.prepare(),
                 'category': str(self.category),
-                'date':str(self.date)
+                'date':str(self.date),
+                'bld':bld
                 }
         y = self.meal.prepare()
         return dict(x.items()+y.items())
