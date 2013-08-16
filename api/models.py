@@ -63,7 +63,7 @@ class Serving(models.Model):
     def prepare(self):
         x= {
                 'cafeteria':self.location.prepare(),
-                'station':'pizza',
+                'category':'pizza',
                 'date':str(self.date)
                 }
         y = self.meal.prepare()
